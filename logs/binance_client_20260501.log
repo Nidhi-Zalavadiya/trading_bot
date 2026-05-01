@@ -1,0 +1,28 @@
+
+2026-05-01 17:03:42 | INFO     | binance_client | Logger initialised → logs\binance_client_20260501.log
+2026-05-01 17:03:42 | DEBUG    | binance_client | → GET https://testnet.binancefuture.com/fapi/v2/account | params: {'timestamp': 1777635222905}
+2026-05-01 17:03:44 | DEBUG    | binance_client | ← HTTP 200 | body: {"feeTier":0,"canTrade":true,"canDeposit":true,"canWithdraw":true,"feeBurn":true,"tradeGroupId":-1,"updateTime":0,"multiAssetsMargin":false,"totalInitialMargin":"19.34540181","totalMaintMargin":"1.54763214","totalWalletBalance":"4999.60702511","totalUnrealizedProfit":"0.02347358","totalMarginBalance":"4999.63049869","totalPositionInitialMargin":"19.34540181","totalOpenOrderInitialMargin":"0.00000000","totalCrossWalletBalance":"4999.60702511","totalCrossUnPnl":"0.02347358","availableBalance":"498
+2026-05-01 17:04:21 | INFO     | binance_client | Logger initialised → logs\binance_client_20260501.log
+2026-05-01 17:04:21 | INFO     | binance_client | Placing BUY MARKET order | symbol=BTCUSDT qty=0.001 price=None stopPrice=None
+2026-05-01 17:04:21 | DEBUG    | binance_client | → POST https://testnet.binancefuture.com/fapi/v1/order | params: {'symbol': 'BTCUSDT', 'side': 'BUY', 'type': 'MARKET', 'quantity': 0.001, 'timestamp': 1777635261151}
+2026-05-01 17:04:22 | DEBUG    | binance_client | ← HTTP 200 | body: {"orderId":13096336176,"symbol":"BTCUSDT","status":"NEW","clientOrderId":"UobkIq3WeMR2blop85q5Z6","price":"0.00","avgPrice":"0.00","origQty":"0.0010","executedQty":"0.0000","cumQty":"0.0000","cumQuote":"0.000000","timeInForce":"GTC","type":"MARKET","reduceOnly":false,"closePosition":false,"side":"BUY","positionSide":"BOTH","stopPrice":"0.00","workingType":"CONTRACT_PRICE","priceProtect":false,"origType":"MARKET","priceMatch":"NONE","selfTradePreventionMode":"EXPIRE_MAKER","goodTillDate":0,"updat
+2026-05-01 17:04:22 | INFO     | binance_client | Order placed successfully | orderId=13096336176 status=NEW
+2026-05-01 17:04:43 | INFO     | binance_client | Logger initialised → logs\binance_client_20260501.log
+2026-05-01 17:04:43 | INFO     | binance_client | Placing SELL LIMIT order | symbol=BTCUSDT qty=0.001 price=85000.0 stopPrice=None
+2026-05-01 17:04:43 | DEBUG    | binance_client | → POST https://testnet.binancefuture.com/fapi/v1/order | params: {'symbol': 'BTCUSDT', 'side': 'SELL', 'type': 'LIMIT', 'quantity': 0.001, 'price': 85000.0, 'timeInForce': 'GTC', 'timestamp': 1777635283567}
+2026-05-01 17:04:45 | DEBUG    | binance_client | ← HTTP 200 | body: {"orderId":13096337044,"symbol":"BTCUSDT","status":"NEW","clientOrderId":"2geiDGYx81Nj795LbIiKcw","price":"85000.00","avgPrice":"0.00","origQty":"0.0010","executedQty":"0.0000","cumQty":"0.0000","cumQuote":"0.000000","timeInForce":"GTC","type":"LIMIT","reduceOnly":false,"closePosition":false,"side":"SELL","positionSide":"BOTH","stopPrice":"0.00","workingType":"CONTRACT_PRICE","priceProtect":false,"origType":"LIMIT","priceMatch":"NONE","selfTradePreventionMode":"EXPIRE_MAKER","goodTillDate":0,"up
+2026-05-01 17:04:45 | INFO     | binance_client | Order placed successfully | orderId=13096337044 status=NEW
+2026-05-01 17:05:03 | INFO     | binance_client | Logger initialised → logs\binance_client_20260501.log
+2026-05-01 17:05:16 | INFO     | binance_client | Logger initialised → logs\binance_client_20260501.log
+2026-05-01 17:05:27 | INFO     | binance_client | Logger initialised → logs\binance_client_20260501.log
+2026-05-01 17:05:27 | INFO     | binance_client | Placing BUY MARKET order | symbol=INVALID123 qty=0.001 price=None stopPrice=None
+2026-05-01 17:05:27 | DEBUG    | binance_client | → POST https://testnet.binancefuture.com/fapi/v1/order | params: {'symbol': 'INVALID123', 'side': 'BUY', 'type': 'MARKET', 'quantity': 0.001, 'timestamp': 1777635327422}
+2026-05-01 17:05:28 | DEBUG    | binance_client | ← HTTP 400 | body: {"code":-1121,"msg":"Invalid symbol."}
+2026-05-01 17:05:28 | ERROR    | binance_client | Binance API error | code=-1121 | msg=Invalid symbol.
+2026-05-01 17:05:49 | INFO     | binance_client | Logger initialised → logs\binance_client_20260501.log
+2026-05-01 17:05:49 | DEBUG    | binance_client | → GET https://testnet.binancefuture.com/fapi/v2/account | params: {'timestamp': 1777635349654}
+2026-05-01 17:05:51 | DEBUG    | binance_client | ← HTTP 200 | body: {"feeTier":0,"canTrade":true,"canDeposit":true,"canWithdraw":true,"feeBurn":true,"tradeGroupId":-1,"updateTime":0,"multiAssetsMargin":false,"totalInitialMargin":"23.20371804","totalMaintMargin":"1.85629744","totalWalletBalance":"4999.57607507","totalUnrealizedProfit":"-0.18530181","totalMarginBalance":"4999.39077326","totalPositionInitialMargin":"23.20371804","totalOpenOrderInitialMargin":"0.00000000","totalCrossWalletBalance":"4999.57607507","totalCrossUnPnl":"-0.18530181","availableBalance":"4
+2026-05-01 17:17:55 | INFO     | binance_client | Logger initialised → logs\binance_client_20260501.log
+2026-05-01 17:17:55 | DEBUG    | binance_client | → GET https://testnet.binancefuture.com/fapi/v2/account | params: {'timestamp': 1777636075197}
+2026-05-01 17:17:56 | DEBUG    | binance_client | ← HTTP 200 | body: {"feeTier":0,"canTrade":true,"canDeposit":true,"canWithdraw":true,"feeBurn":true,"tradeGroupId":-1,"updateTime":0,"multiAssetsMargin":false,"totalInitialMargin":"23.21267450","totalMaintMargin":"1.85701395","totalWalletBalance":"4999.57607507","totalUnrealizedProfit":"-0.00617251","totalMarginBalance":"4999.56990256","totalPositionInitialMargin":"23.21267450","totalOpenOrderInitialMargin":"0.00000000","totalCrossWalletBalance":"4999.57607507","totalCrossUnPnl":"-0.00617251","availableBalance":"4
+2026-05-01 17:46:06 | INFO     | binance_client | Logger initialised → logs\binance_client_20260501.log

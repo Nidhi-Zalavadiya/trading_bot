@@ -1,0 +1,14 @@
+2026-05-01 17:03:42 | INFO     | orders | Logger initialised → logs\orders_20260501.log
+2026-05-01 17:04:21 | INFO     | orders | Logger initialised → logs\orders_20260501.log
+2026-05-01 17:04:21 | INFO     | orders | Order request | symbol=BTCUSDT side=BUY type=MARKET qty=0.001 price=None stopPrice=None
+2026-05-01 17:04:22 | DEBUG    | orders | Formatted result: {'orderId': 13096336176, 'symbol': 'BTCUSDT', 'side': 'BUY', 'type': 'MARKET', 'status': 'NEW', 'origQty': '0.0010', 'executedQty': '0.0000', 'avgPrice': '0.00', 'price': '0.00', 'stopPrice': '0.00', 'timeInForce': 'GTC', 'updateTime': 1777635262214}
+2026-05-01 17:04:43 | INFO     | orders | Logger initialised → logs\orders_20260501.log
+2026-05-01 17:04:43 | INFO     | orders | Order request | symbol=BTCUSDT side=SELL type=LIMIT qty=0.001 price=85000.0 stopPrice=None
+2026-05-01 17:04:45 | DEBUG    | orders | Formatted result: {'orderId': 13096337044, 'symbol': 'BTCUSDT', 'side': 'SELL', 'type': 'LIMIT', 'status': 'NEW', 'origQty': '0.0010', 'executedQty': '0.0000', 'avgPrice': '0.00', 'price': '85000.00', 'stopPrice': '0.00', 'timeInForce': 'GTC', 'updateTime': 1777635285117}
+2026-05-01 17:05:03 | INFO     | orders | Logger initialised → logs\orders_20260501.log
+2026-05-01 17:05:16 | INFO     | orders | Logger initialised → logs\orders_20260501.log
+2026-05-01 17:05:27 | INFO     | orders | Logger initialised → logs\orders_20260501.log
+2026-05-01 17:05:27 | INFO     | orders | Order request | symbol=INVALID123 side=BUY type=MARKET qty=0.001 price=None stopPrice=None
+2026-05-01 17:05:49 | INFO     | orders | Logger initialised → logs\orders_20260501.log
+2026-05-01 17:17:55 | INFO     | orders | Logger initialised → logs\orders_20260501.log
+2026-05-01 17:46:06 | INFO     | orders | Logger initialised → logs\orders_20260501.log

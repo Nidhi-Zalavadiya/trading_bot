@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrimeTrade.ai — Binance Futures Testnet Bot</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f14;--bg2:#13161e;--bg3:#1a1e28;--bg4:#21263380;
+  --border:#ffffff12;--border2:#ffffff20;
+  --text:#e8ecf4;--text2:#8892a4;--text3:#5a6478;
+  --green:#00d4a0;--green2:#00d4a015;--green3:#00d4a030;
+  --red:#ff4d6d;--red2:#ff4d6d15;--red3:#ff4d6d30;
+  --blue:#4d9fff;--blue2:#4d9fff15;--amber:#f5a623;--amber2:#f5a62315;
+  --font:'JetBrains Mono',monospace;--head:'Syne',sans-serif;
+  --r:8px;--r2:12px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px}
+.app{display:grid;grid-template-rows:auto 1fr auto;height:100vh}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{font-family:var(--head);font-size:16px;font-weight:700;color:var(--text);letter-spacing:-0.5px}
+.logo span{color:var(--green)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.net-badge{font-size:10px;background:var(--amber2);color:var(--amber);border:1px solid #f5a62330;padding:2px 8px;border-radius:4px;margin-left:auto}
+.main{display:grid;grid-template-columns:1fr 340px;overflow:hidden}
+.left{padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
+.ticker-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ticker-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:border-color 0.2s}
+.ticker-card:hover{border-color:var(--border2)}
+.ticker-card.active{border-color:var(--green);background:var(--green2)}
+.tc-sym{font-family:var(--head);font-size:13px;font-weight:600}
+.tc-price{font-size:15px;font-weight:600;margin:4px 0 2px}
+.tc-chg{font-size:11px}
+.up{color:var(--green)}.dn{color:var(--red)}
+.chart-area{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;flex:1}
+.chart-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.chart-sym{font-family:var(--head);font-size:20px;font-weight:700}
+.chart-price{font-size:20px;font-weight:600;color:var(--green)}
+.chart-sub{font-size:11px;color:var(--text2);margin-left:auto}
+.chart-wrap{position:relative;height:160px}
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ob-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px}
+.ob-title{font-size:10px;letter-spacing:1px;color:var(--text3);margin-bottom:8px;text-transform:uppercase}
+.ob-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;position:relative}
+.ob-bar{position:absolute;right:0;top:0;height:100%;opacity:0.12;border-radius:2px}
+.ob-row .price{font-weight:500;z-index:1}.ob-row .size{color:var(--text2);z-index:1}
+.right{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:12px;text-align:center;cursor:pointer;font-size:12px;color:var(--text2);border-bottom:2px solid transparent;transition:all 0.2s;font-family:var(--head);font-weight:500}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+.panel{padding:16px;flex:1;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.panel.hidden{display:none}
+.field{display:flex;flex-direction:column;gap:5px}
+.label{font-size:10px;letter-spacing:1px;color:var(--text3);text-transform:uppercase}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.seg-btn{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center;cursor:pointer;transition:all 0.15s;font-size:12px;font-family:var(--head);color:var(--text2);font-weight:500}
+.seg-btn:hover{border-color:var(--border2);color:var(--text)}
+.seg-btn.buy-active{background:var(--green2);border-color:var(--green);color:var(--green)}
+.seg-btn.sell-active{background:var(--red2);border-color:var(--red);color:var(--red)}
+.seg-btn.type-active{background:var(--blue2);border-color:var(--blue);color:var(--blue)}
+input[type=text],input[type=number],input[type=password]{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-family:var(--font);font-size:13px;width:100%;outline:none;transition:border-color 0.15s}
+input:focus{border-color:var(--blue)}
+input::placeholder{color:var(--text3)}
+.input-wrap{position:relative}
+.input-wrap input{padding-right:50px}
+.input-unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:11px;pointer-events:none}
+.pct-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pct-btn{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:5px;text-align:center;cursor:pointer;font-size:11px;color:var(--text2);transition:all 0.15s}
+.pct-btn:hover{border-color:var(--border2);color:var(--text)}
+.summary-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px}
+.sum-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px}
+.sum-row .k{color:var(--text2)}.sum-row .v{font-weight:500}
+.sum-divider{height:1px;background:var(--border);margin:8px 0}
+.place-btn{padding:14px;border-radius:var(--r);font-family:var(--head);font-size:14px;font-weight:600;border:none;cursor:pointer;width:100%;letter-spacing:0.3px;transition:all 0.15s;margin-top:auto}
+.place-btn:hover{opacity:0.9;transform:translateY(-1px)}
+.place-btn:active{transform:translateY(0);opacity:1}
+.buy-btn{background:var(--green);color:#0a1a14}
+.sell-btn{background:var(--red);color:#1a0a0f}
+.orders-list{flex:1;overflow-y:auto;padding:12px 16px}
+.ord-item{padding:12px 0;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:4px}
+.ord-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ord-sym{font-family:var(--head);font-size:13px;font-weight:600}
+.badge{font-size:10px;padding:2px 7px;border-radius:3px;font-family:var(--head);font-weight:500}
+.badge-buy{background:var(--green3);color:var(--green)}
+.badge-sell{background:var(--red3);color:var(--red)}
+.badge-mkt{background:var(--bg3);color:var(--text2)}
+.badge-lmt{background:var(--blue2);color:var(--blue)}
+.badge-stop{background:var(--amber2);color:var(--amber)}
+.badge-filled{background:var(--green3);color:var(--green)}
+.badge-new{background:var(--blue2);color:var(--blue)}
+.ord-bot{display:flex;justify-content:space-between;color:var(--text2);font-size:11px;flex-wrap:wrap;gap:4px}
+.log-area{flex:1;overflow-y:auto;padding:12px 16px;font-size:11px;line-height:1.8;color:var(--text2)}
+.log-line{display:flex;gap:8px;padding:1px 0}
+.log-time{color:var(--text3);min-width:70px;flex-shrink:0}
+.log-info{color:var(--blue)}.log-ok{color:var(--green)}.log-err{color:var(--red)}.log-warn{color:var(--amber)}
+.footer{background:var(--bg2);border-top:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;flex-shrink:0}
+.stat{display:flex;flex-direction:column;gap:1px}
+.stat-label{font-size:10px;color:var(--text3);letter-spacing:0.5px}
+.stat-val{font-size:13px;font-weight:500}
+.footer-right{display:flex;gap:6px;align-items:center;font-size:10px;color:var(--text3)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:var(--r);font-size:13px;font-family:var(--head);font-weight:500;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1}
+.toast-ok{background:var(--green);color:#0a1a14}
+.toast-err{background:var(--red);color:#fff}
+button.connect-btn{background:var(--green2);border:1px solid var(--green);color:var(--green);border-radius:5px;padding:5px 14px;cursor:pointer;font-size:11px;font-family:var(--head);font-weight:500;white-space:nowrap;transition:all 0.15s}
+button.connect-btn:hover{background:var(--green);color:#0a1a14}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="dot"></div>
+    <div class="logo">Prime<span>Trade</span>.ai</div>
+    <div style="font-size:11px;color:var(--text2)">Binance Futures Testnet</div>
+    <div class="net-badge">TESTNET</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap">
+      <input type="text" id="apiKey" placeholder="API Key..." style="width:180px;padding:5px 10px;font-size:11px">
+      <input type="password" id="apiSecret" placeholder="API Secret..." style="width:180px;padding:5px 10px;font-size:11px">
+      <button class="connect-btn" onclick="connectApi()">Connect</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="left">
+      <div class="ticker-row" id="tickerRow"></div>
+      <div class="chart-area">
+        <div class="chart-header">
+          <div class="chart-sym" id="chartSym">BTC/USDT</div>
+          <div class="chart-price" id="chartPrice">$67,432.10</div>
+          <div class="chart-sub" id="chartChg">+2.34% today</div>
+        </div>
+        <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+      </div>
+      <div class="ob-grid">
+        <div class="ob-card">
+          <div class="ob-title">Asks (Sell Orders)</div>
+          <div id="asks"></div>
+        </div>
+        <div class="ob-card">
+          <div class="ob-title">Bids (Buy Orders)</div>
+          <div id="bids"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('order',this)">Place Order</div>
+        <div class="tab" onclick="switchTab('orders',this)">My Orders</div>
+        <div class="tab" onclick="switchTab('log',this)">Log</div>
+      </div>
+
+      <div class="panel" id="tab-order">
+        <div class="field">
+          <div class="label">Side</div>
+          <div class="seg">
+            <div class="seg-btn buy-active" id="sideBuy" onclick="setSide('BUY')">BUY</div>
+            <div class="seg-btn" id="sideSell" onclick="setSide('SELL')">SELL</div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="label">Order Type</div>
+          <div class="seg3">
+            <div class="seg-btn type-active" id="typeMarket" onclick="setType('MARKET')">Market</div>
+            <div class="seg-btn" id="typeLimit" onclick="setType('LIMIT')">Limit</div>
+            <div class="seg-btn" id="typeStop" onclick="setType('STOP_MARKET')">Stop</div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="label">Symbol</div>
+          <div class="seg" id="symSeg">
+            <div class="seg-btn type-active" onclick="setSym(this,'BTCUSDT')" style="font-size:11px">BTCUSDT</div>
+            <div class="seg-btn" onclick="setSym(this,'ETHUSDT')" style="font-size:11px">ETHUSDT</div>
+          </div>
+        </div>
+        <div class="field" id="priceField" style="display:none">
+          <div class="label">Limit Price</div>
+          <div class="input-wrap"><input type="number" id="priceInput" placeholder="0.00"><span class="input-unit">USDT</span></div>
+        </div>
+        <div class="field" id="stopField" style="display:none">
+          <div class="label">Stop Price</div>
+          <div class="input-wrap"><input type="number" id="stopInput" placeholder="0.00"><span class="input-unit">USDT</span></div>
+        </div>
+        <div class="field">
+          <div class="label">Quantity</div>
+          <div class="input-wrap"><input type="number" id="qtyInput" placeholder="0.000" step="0.001" value="0.001"><span class="input-unit" id="qtyUnit">BTC</span></div>
+        </div>
+        <div class="field">
+          <div class="pct-row">
+            <div class="pct-btn" onclick="setPct(25)">25%</div>
+            <div class="pct-btn" onclick="setPct(50)">50%</div>
+            <div class="pct-btn" onclick="setPct(75)">75%</div>
+            <div class="pct-btn" onclick="setPct(100)">100%</div>
+          </div>
+        </div>
+        <div class="summary-box">
+          <div class="sum-row"><span class="k">Symbol</span><span class="v" id="sumSym">BTCUSDT</span></div>
+          <div class="sum-row"><span class="k">Side</span><span class="v up" id="sumSide">BUY</span></div>
+          <div class="sum-row"><span class="k">Type</span><span class="v" id="sumType">MARKET</span></div>
+          <div class="sum-row"><span class="k">Quantity</span><span class="v" id="sumQty">0.001 BTC</span></div>
+          <div class="sum-divider"></div>
+          <div class="sum-row"><span class="k">Est. Value</span><span class="v" id="sumVal">≈ $67.43</span></div>
+        </div>
+        <button class="place-btn buy-btn" id="placeBtn" onclick="placeOrder()">PLACE BUY ORDER</button>
+      </div>
+
+      <div class="panel hidden" id="tab-orders">
+        <div class="orders-list" id="ordersList" style="padding:0">
+          <div style="color:var(--text3);font-size:12px;padding:20px;text-align:center;line-height:2">No orders placed yet.<br>Place an order to see it here.</div>
+        </div>
+      </div>
+
+      <div class="panel hidden" id="tab-log">
+        <div class="log-area" id="logArea"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="stat"><span class="stat-label">WALLET BALANCE</span><span class="stat-val" id="walletBal">— USDT</span></div>
+    <div class="stat"><span class="stat-label">AVAILABLE</span><span class="stat-val" id="avBal">— USDT</span></div>
+    <div class="stat"><span class="stat-label">UNREALISED PnL</span><span class="stat-val" id="upnl">—</span></div>
+    <div class="stat"><span class="stat-label">ORDERS TODAY</span><span class="stat-val" id="ordCount">0</span></div>
+    <div class="footer-right"><div class="status-dot"></div>Binance Futures Testnet</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TICKERS=[
+  {sym:'BTCUSDT',price:67432.10,chg:2.34,unit:'BTC'},
+  {sym:'ETHUSDT',price:3521.45,chg:-1.12,unit:'ETH'},
+  {sym:'BNBUSDT',price:542.30,chg:0.87,unit:'BNB'},
+  {sym:'SOLUSDT',price:182.60,chg:4.21,unit:'SOL'},
+];
+let state={side:'BUY',type:'MARKET',sym:'BTCUSDT',connected:false,apiKey:'',apiSecret:'',ordCount:0};
+let priceData={};
+let chart;
+
+function initTickers(){
+  const el=document.getElementById('tickerRow');
+  el.innerHTML='';
+  TICKERS.forEach((t,i)=>{
+    priceData[t.sym]={base:t.price,prices:Array.from({length:40},(_,j)=>+(t.price*(1+(Math.random()-0.5)*0.001*(j+1))).toFixed(2))};
+    const d=document.createElement('div');
+    d.className='ticker-card'+(i===0?' active':'');
+    d.id='tk-'+t.sym;
+    d.onclick=()=>selectTicker(t.sym);
+    d.innerHTML=`<div class="tc-sym">${t.sym.replace('USDT','')}/USDT</div>
+      <div class="tc-price" id="tp-${t.sym}">$${t.price.toLocaleString()}</div>
+      <div class="tc-chg ${t.chg>=0?'up':'dn'}" id="tc-${t.sym}">${t.chg>=0?'+':''}${t.chg}%</div>`;
+    el.appendChild(d);
+  });
+}
+
+function selectTicker(sym){
+  document.querySelectorAll('.ticker-card').forEach(c=>c.classList.remove('active'));
+  const card=document.getElementById('tk-'+sym);
+  if(card)card.classList.add('active');
+  state.sym=sym;
+  const t=TICKERS.find(x=>x.sym===sym)||TICKERS[0];
+  document.getElementById('chartSym').textContent=sym.replace('USDT','/USDT');
+  document.getElementById('chartPrice').textContent='$'+t.price.toLocaleString();
+  document.getElementById('chartChg').textContent=(t.chg>=0?'+':'')+t.chg.toFixed(2)+'% today';
+  document.getElementById('chartPrice').style.color=t.chg>=0?'var(--green)':'var(--red)';
+  document.getElementById('qtyUnit').textContent=t.unit;
+  document.getElementById('sumSym').textContent=sym;
+  updateSummary();
+  updateChart(sym);
+  updateOrderBook(sym);
+}
+
+function setSide(s){
+  state.side=s;
+  document.getElementById('sideBuy').className='seg-btn'+(s==='BUY'?' buy-active':'');
+  document.getElementById('sideSell').className='seg-btn'+(s==='SELL'?' sell-active':'');
+  document.getElementById('sumSide').textContent=s;
+  document.getElementById('sumSide').className='v '+(s==='BUY'?'up':'dn');
+  const btn=document.getElementById('placeBtn');
+  btn.textContent='PLACE '+s+' ORDER';
+  btn.className='place-btn '+(s==='BUY'?'buy-btn':'sell-btn');
+}
+
+function setType(t){
+  state.type=t;
+  document.getElementById('typeMarket').className='seg-btn'+(t==='MARKET'?' type-active':'');
+  document.getElementById('typeLimit').className='seg-btn'+(t==='LIMIT'?' type-active':'');
+  document.getElementById('typeStop').className='seg-btn'+(t==='STOP_MARKET'?' type-active':'');
+  document.getElementById('priceField').style.display=t==='LIMIT'?'flex':'none';
+  document.getElementById('stopField').style.display=t==='STOP_MARKET'?'flex':'none';
+  document.getElementById('sumType').textContent=t;
+}
+
+function setSym(el,sym){
+  document.querySelectorAll('#symSeg .seg-btn').forEach(b=>b.className='seg-btn');
+  el.className='seg-btn type-active';
+  selectTicker(sym);
+}
+
+function setPct(pct){
+  const units={BTCUSDT:0.01,ETHUSDT:0.1,BNBUSDT:1,SOLUSDT:1};
+  const base=units[state.sym]||0.01;
+  const qty=+(base*pct/100).toFixed(3)||0.001;
+  document.getElementById('qtyInput').value=qty;
+  updateSummary();
+}
+
+function updateSummary(){
+  const t=TICKERS.find(x=>x.sym===state.sym)||TICKERS[0];
+  const qty=parseFloat(document.getElementById('qtyInput').value)||0;
+  const val=(qty*t.price).toFixed(2);
+  document.getElementById('sumSym').textContent=state.sym;
+  document.getElementById('sumQty').textContent=qty+' '+t.unit;
+  document.getElementById('sumVal').textContent='≈ $'+parseFloat(val).toLocaleString();
+}
+document.getElementById('qtyInput').addEventListener('input',updateSummary);
+
+function initChart(){
+  const ctx=document.getElementById('priceChart').getContext('2d');
+  const d=priceData['BTCUSDT'];
+  chart=new Chart(ctx,{
+    type:'line',
+    data:{labels:d.prices.map((_,i)=>i),datasets:[{data:d.prices,borderColor:'#00d4a0',borderWidth:1.5,pointRadius:0,fill:true,
+      backgroundColor:(ctx2)=>{const g=ctx2.chart.ctx.createLinearGradient(0,0,0,160);g.addColorStop(0,'#00d4a025');g.addColorStop(1,'#00d4a000');return g;},tension:0.4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false,grid:{display:false}}},animation:{duration:400}}
+  });
+}
+
+function updateChart(sym){
+  if(!chart)return;
+  const d=priceData[sym];
+  const t=TICKERS.find(x=>x.sym===sym)||TICKERS[0];
+  chart.data.labels=d.prices.map((_,i)=>i);
+  chart.data.datasets[0].data=[...d.prices];
+  const c=t.chg>=0?'#00d4a0':'#ff4d6d';
+  chart.data.datasets[0].borderColor=c;
+  chart.data.datasets[0].backgroundColor=(ctx)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,160);g.addColorStop(0,c+'25');g.addColorStop(1,c+'00');return g;};
+  chart.update();
+}
+
+function updateOrderBook(sym){
+  const t=TICKERS.find(x=>x.sym===sym)||TICKERS[0];
+  const p=t.price;
+  let ah='',bh='';
+  for(let i=5;i>=1;i--){
+    const pr=(p*(1+i*0.0008)).toFixed(2);
+    const sz=(Math.random()*2+0.1).toFixed(3);
+    const w=Math.round(Math.random()*70+10);
+    ah+=`<div class="ob-row"><div class="ob-bar" style="background:var(--red);width:${w}%"></div><span class="price dn">${pr}</span><span class="size">${sz}</span></div>`;
+  }
+  for(let i=1;i<=5;i++){
+    const pr=(p*(1-i*0.0008)).toFixed(2);
+    const sz=(Math.random()*2+0.1).toFixed(3);
+    const w=Math.round(Math.random()*70+10);
+    bh+=`<div class="ob-row"><div class="ob-bar" style="background:var(--green);width:${w}%"></div><span class="price up">${pr}</span><span class="size">${sz}</span></div>`;
+  }
+  document.getElementById('asks').innerHTML=ah;
+  document.getElementById('bids').innerHTML=bh;
+}
+
+function switchTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
+  el.classList.add('active');
+  document.getElementById('tab-'+id).classList.remove('hidden');
+}
+
+function log(msg,type='info'){
+  const el=document.getElementById('logArea');
+  const now=new Date().toTimeString().slice(0,8);
+  const line=document.createElement('div');
+  line.className='log-line';
+  line.innerHTML=`<span class="log-time">${now}</span><span class="log-${type}">${msg}</span>`;
+  el.appendChild(line);
+  el.scrollTop=el.scrollHeight;
+}
+
+function showToast(msg,ok=true){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast '+(ok?'toast-ok':'toast-err')+' show';
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function connectApi(){
+  const k=document.getElementById('apiKey').value.trim();
+  const s=document.getElementById('apiSecret').value.trim();
+  if(!k||!s){showToast('Enter both API Key and Secret',false);return;}
+  state.apiKey=k;state.apiSecret=s;state.connected=true;
+  log('API credentials saved — key: '+k.slice(0,8)+'...','ok');
+  log('Ready to place real orders on Binance Testnet','ok');
+  showToast('Connected! Ready to trade.');
+  document.getElementById('walletBal').textContent='10,523.40 USDT';
+  document.getElementById('avBal').textContent='9,841.20 USDT';
+  document.getElementById('upnl').textContent='+124.50 USDT';
+  document.getElementById('upnl').style.color='var(--green)';
+}
+
+async function placeOrder() {
+  const qty = parseFloat(document.getElementById('qtyInput').value);
+  if (!qty || qty <= 0) { showToast('Invalid quantity', false); return; }
+
+  const btn = document.getElementById('placeBtn');
+  btn.textContent = 'Processing...';
+  btn.disabled = true;
+
+  // Data taiyar karein jo backend ko bhejna hai
+  const orderData = {
+    apiKey: state.apiKey,
+    apiSecret: state.apiSecret,
+    symbol: state.sym,
+    side: state.side,
+    type: state.type,
+    quantity: qty,
+    price: state.type === 'LIMIT' ? parseFloat(document.getElementById('priceInput').value) : null,
+    stop_price: state.type === 'STOP_MARKET' ? parseFloat(document.getElementById('stopInput').value) : null
+  };
+
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/trade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.detail || 'Order failed');
+
+    // Order success! UI update karein
+    log(`Success: Order ID ${result.orderId} placed`, 'ok');
+    showToast('Order Placed: ' + result.status);
+    
+    // List mein order dikhayein (existing logic)
+    updateOrdersList(result); 
+
+  } catch (err) {
+    log('Error: ' + err.message, 'err');
+    showToast(err.message, false);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'PLACE ' + state.side + ' ORDER';
+  }
+}
+function updateOrdersList(order) {
+  const listEl = document.getElementById('ordersList');
+  
+  // "No orders placed yet" message ko remove karein agar pehla order hai
+  const emptyMsg = listEl.querySelector('div[style*="text-align:center"]');
+  if (emptyMsg) listEl.innerHTML = '';
+
+  const isMarket = order.type === 'MARKET';
+  const isStop = order.type === 'STOP_MARKET';
+  
+  // Price formatting (Market order ke liye avgPrice aur Limit ke liye limit price)
+  const dispPrice = order.avgPrice && order.avgPrice !== '0' 
+    ? 'fill: $' + parseFloat(order.avgPrice).toLocaleString() 
+    : order.price && order.price !== '0' 
+      ? 'limit: $' + parseFloat(order.price).toLocaleString() 
+      : order.stopPrice ? 'stop: $' + parseFloat(order.stopPrice).toLocaleString() : '';
+
+  const item = document.createElement('div');
+  item.className = 'ord-item';
+  item.innerHTML = `
+    <div class="ord-top">
+      <span class="ord-sym">${order.symbol}</span>
+      <span class="badge ${order.side === 'BUY' ? 'badge-buy' : 'badge-sell'}">${order.side}</span>
+      <span class="badge ${isMarket ? 'badge-mkt' : isStop ? 'badge-stop' : 'badge-lmt'}">${order.type}</span>
+      <span class="badge ${order.status === 'FILLED' ? 'badge-filled' : 'badge-new'}" style="margin-left:auto">${order.status}</span>
+    </div>
+    <div class="ord-bot">
+      <span>qty: ${order.origQty}</span>
+      <span>${dispPrice}</span>
+      <span>ID: ${order.orderId}</span>
+    </div>`;
+    
+  listEl.insertBefore(item, listEl.firstChild);
+}
+
+function animatePrices(){
+  TICKERS.forEach(t=>{
+    const chg=(Math.random()-0.499)*0.12;
+    t.price=+(t.price*(1+chg/100)).toFixed(2);
+    t.chg=+(t.chg+chg*0.08).toFixed(2);
+    const tp=document.getElementById('tp-'+t.sym);
+    const tc=document.getElementById('tc-'+t.sym);
+    if(tp){tp.textContent='$'+t.price.toLocaleString();tp.style.color=chg>0?'var(--green)':'var(--red)';setTimeout(()=>tp.style.color='',400)}
+    if(tc){tc.textContent=(t.chg>=0?'+':'')+t.chg.toFixed(2)+'%';tc.className='tc-chg '+(t.chg>=0?'up':'dn')}
+    const pd=priceData[t.sym];
+    if(pd){pd.prices.push(t.price);if(pd.prices.length>50)pd.prices.shift()}
+  });
+  const t=TICKERS.find(x=>x.sym===state.sym)||TICKERS[0];
+  document.getElementById('chartPrice').textContent='$'+t.price.toLocaleString();
+  document.getElementById('chartChg').textContent=(t.chg>=0?'+':'')+t.chg.toFixed(2)+'% today';
+  if(chart){chart.data.datasets[0].data=[...priceData[state.sym].prices];chart.update('none')}
+  updateSummary();
+  updateOrderBook(state.sym);
+}
+
+initTickers();
+setTimeout(()=>{initChart();updateOrderBook('BTCUSDT');},200);
+setInterval(animatePrices,2000);
+log('PrimeTrade.ai GUI initialised','ok');
+log('Binance Futures Testnet — ready','info');
+log('Connect your API Key above to start trading','warn');
+</script>
+</body>
+</html>
