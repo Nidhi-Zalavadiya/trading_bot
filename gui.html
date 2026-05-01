@@ -412,7 +412,7 @@ async function placeOrder() {
   btn.textContent = 'Processing...';
   btn.disabled = true;
 
-  // Data taiyar karein jo backend ko bhejna hai
+
   const orderData = {
     apiKey: state.apiKey,
     apiSecret: state.apiSecret,
@@ -435,11 +435,10 @@ async function placeOrder() {
 
     if (!response.ok) throw new Error(result.detail || 'Order failed');
 
-    // Order success! UI update karein
+    // Order success! update UI 
     log(`Success: Order ID ${result.orderId} placed`, 'ok');
     showToast('Order Placed: ' + result.status);
     
-    // List mein order dikhayein (existing logic)
     updateOrdersList(result); 
 
   } catch (err) {
@@ -452,15 +451,13 @@ async function placeOrder() {
 }
 function updateOrdersList(order) {
   const listEl = document.getElementById('ordersList');
-  
-  // "No orders placed yet" message ko remove karein agar pehla order hai
+
   const emptyMsg = listEl.querySelector('div[style*="text-align:center"]');
   if (emptyMsg) listEl.innerHTML = '';
 
   const isMarket = order.type === 'MARKET';
   const isStop = order.type === 'STOP_MARKET';
   
-  // Price formatting (Market order ke liye avgPrice aur Limit ke liye limit price)
   const dispPrice = order.avgPrice && order.avgPrice !== '0' 
     ? 'fill: $' + parseFloat(order.avgPrice).toLocaleString() 
     : order.price && order.price !== '0' 

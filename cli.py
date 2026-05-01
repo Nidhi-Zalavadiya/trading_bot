@@ -140,10 +140,6 @@ def cmd_open_orders(client: BinanceFuturesClient, args: argparse.Namespace) -> N
         )
     print()
 
-
-# ── Argument parser ───────────────────────────────────────────────────────────
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="trading_bot",
