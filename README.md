@@ -1,4 +1,8 @@
 # 📈 Binance Futures Testnet Trading Bot
+![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-green?logo=fastapi)
+![Binance](https://img.shields.io/badge/Binance-Futures%20Testnet-yellow?logo=binance)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
 A clean, production-structured Python CLI + Web GUI application that places futures orders on **Binance Futures Testnet (USDT-M)** with full logging, input validation, and error handling — built for the PrimeTrade.ai Python Developer application task.
 
