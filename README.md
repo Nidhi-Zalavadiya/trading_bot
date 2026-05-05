@@ -349,4 +349,4 @@ No heavy SDK — the client uses raw REST calls with HMAC-SHA256 signing for ful
 
 ## 👤 Author
 
-Built as part of the **PrimeTrade.ai Python Developer** application task.
+Nidhi Zalavadiya
